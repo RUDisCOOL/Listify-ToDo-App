@@ -2,12 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'pages/home_page.dart';
 import 'package:google_fonts/google_fonts.dart';
-// import 'package:hive/hive.dart';
-// import 'package:path_provider/path_provider.dart' as path_provider;
+
+const tileBackgroundColor = Colors.black;
+const scaffoldBackgroundColor = Colors.black;
+const commonFontColor = Color.fromARGB(255, 255, 248, 225);
+const seedColor = Color.fromARGB(255, 255, 236, 179);
+const checkColor = Color.fromARGB(255, 100, 100, 100);
+const borderColor = Color.fromARGB(255, 255, 236, 179);
+const fabColor = Color.fromARGB(255, 255, 224, 130);
+const bottomSheetBackgroundColor = Color.fromARGB(255, 30, 30, 30);
+const inputHintColor = Color.fromARGB(255, 135, 135, 120);
 
 void main() async {
-  // final appDocumentDirectory =
-  //     await path_provider.getApplicationDocumentsDirectory();
   await Hive.initFlutter();
   await Hive.openBox('myTasks');
   runApp(const MyApp());
@@ -15,7 +21,6 @@ void main() async {
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -24,34 +29,39 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         textTheme: GoogleFonts.outfitTextTheme(),
         colorScheme: ColorScheme.fromSeed(
-          seedColor: Colors.amber.shade100,
+          seedColor: seedColor,
         ),
-        scaffoldBackgroundColor: Colors.black,
-        cardColor: Colors.black,
-        floatingActionButtonTheme: FloatingActionButtonThemeData(
-          backgroundColor: Colors.amber[200],
-        ),
-        dialogTheme: DialogTheme(
-          backgroundColor: Colors.amber[200],
+        scaffoldBackgroundColor: scaffoldBackgroundColor,
+        cardColor: tileBackgroundColor,
+        floatingActionButtonTheme: const FloatingActionButtonThemeData(
+          backgroundColor: fabColor,
         ),
         checkboxTheme: CheckboxThemeData(
-          checkColor: const WidgetStatePropertyAll(
-            Color.fromARGB(255, 100, 100, 100),
-          ),
-          fillColor: WidgetStateProperty.all(Colors.black),
+          checkColor: const WidgetStatePropertyAll(checkColor),
+          fillColor: WidgetStateProperty.all(tileBackgroundColor),
           side: WidgetStateBorderSide.resolveWith((states) {
             if (states.contains(WidgetState.selected)) {
               return const BorderSide(
                 width: 1.5,
-                color: Colors.black,
-              ); // Border color when checked
+                color: tileBackgroundColor,
+              );
             }
-            return BorderSide(
+            return const BorderSide(
               width: 1.5,
-              color: Colors.amber[50] ?? Colors.amber,
-            ); // Border color when unchecked
+              color: borderColor,
+            );
           }),
           shape: const CircleBorder(),
+        ),
+        appBarTheme: const AppBarTheme(
+          foregroundColor: commonFontColor,
+          backgroundColor: scaffoldBackgroundColor,
+        ),
+        bottomSheetTheme: const BottomSheetThemeData(
+          backgroundColor: bottomSheetBackgroundColor,
+        ),
+        inputDecorationTheme: const InputDecorationTheme(
+          hintStyle: TextStyle(color: inputHintColor),
         ),
         useMaterial3: true,
       ),

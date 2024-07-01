@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 
+const _borderColor = Color.fromARGB(255, 255, 236, 179);
+
 class ToDoTile extends StatelessWidget {
   final bool value;
+
   final String task;
   final bool star;
   final ValueChanged<bool?>? onChanged;
@@ -99,6 +102,10 @@ class ToDoTile extends StatelessWidget {
                               : Theme.of(context).cardColor,
                         );
                       }
+                      return const BorderSide(
+                        width: 1.5,
+                        color: _borderColor,
+                      );
                     }),
                     onChanged: (value) => onChanged!(value),
                   ),

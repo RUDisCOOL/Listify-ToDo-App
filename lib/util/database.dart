@@ -10,6 +10,7 @@ class Database {
         'task': 'Make new Task',
         'completed': false,
         'starred': false,
+        'dueDate': null,
       },
     );
     box.put('ToDoList', toDoList);

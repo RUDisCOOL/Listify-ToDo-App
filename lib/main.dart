@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'pages/home_page.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 
-const tileBackgroundColor = Colors.black;
 const scaffoldBackgroundColor = Colors.black;
 const commonFontColor = Color.fromARGB(255, 255, 248, 225);
 const seedColor = Color.fromARGB(255, 255, 236, 179);
@@ -24,34 +24,30 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      locale: const Locale('en', 'IN'), // Set the locale to India
+      localizationsDelegates: const [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: const [
+        Locale('en', 'US'), // English, US
+        Locale('en', 'IN'), // English, India
+        // Add other supported locales here
+      ],
       debugShowCheckedModeBanner: false,
       home: const HomePage(),
       theme: ThemeData(
-        textTheme: GoogleFonts.outfitTextTheme(),
+        brightness: Brightness.dark,
+        textTheme: GoogleFonts.outfitTextTheme(const TextTheme()),
         colorScheme: ColorScheme.fromSeed(
           seedColor: seedColor,
+          brightness: Brightness.dark,
         ),
         scaffoldBackgroundColor: scaffoldBackgroundColor,
-        cardColor: tileBackgroundColor,
-        floatingActionButtonTheme: const FloatingActionButtonThemeData(
-          backgroundColor: fabColor,
-        ),
-        checkboxTheme: CheckboxThemeData(
-          checkColor: const WidgetStatePropertyAll(checkColor),
-          fillColor: WidgetStateProperty.all(tileBackgroundColor),
-          side: WidgetStateBorderSide.resolveWith((states) {
-            if (states.contains(WidgetState.selected)) {
-              return const BorderSide(
-                width: 1.5,
-                color: tileBackgroundColor,
-              );
-            }
-            return const BorderSide(
-              width: 1.5,
-              color: borderColor,
-            );
-          }),
-          shape: const CircleBorder(),
+        checkboxTheme: const CheckboxThemeData(
+          checkColor: WidgetStatePropertyAll(checkColor),
+          shape: CircleBorder(),
         ),
         appBarTheme: const AppBarTheme(
           foregroundColor: commonFontColor,

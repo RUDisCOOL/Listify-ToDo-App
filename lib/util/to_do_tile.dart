@@ -1,13 +1,32 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:intl/intl.dart';
 
 const _borderColor = Color.fromARGB(255, 255, 236, 179);
 
 class ToDoTile extends StatelessWidget {
-  final bool value;
+  // Colors
+  final _tileBackgroundColor = const Color.fromARGB(255, 45, 45, 45);
+  final _completedTileBackgroundColor = const Color.fromARGB(255, 15, 15, 15);
+  final _starredCompletedTileBackgroundColor =
+      const Color.fromARGB(255, 25, 25, 5);
+  final _starredTileBackgroundColor = const Color.fromARGB(255, 45, 45, 10);
+  final _commonTextColor = const Color.fromARGB(255, 255, 248, 225);
+  final _completedTextColor = const Color.fromARGB(255, 100, 100, 100);
+  final _lineThroughColor = const Color.fromARGB(255, 52, 52, 52);
+  final _starBackgroundColor = const Color.fromARGB(255, 75, 75, 75);
+  final _starForegroundColor = const Color.fromARGB(255, 255, 215, 0);
+  final _deleteBackgroundColor = const Color.fromARGB(255, 255, 125, 125);
+  final _deleteForegroundColor = const Color.fromARGB(255, 0, 0, 0);
+  final _dueDateColor = const Color.fromARGB(255, 170, 165, 150);
+  final _pastDueDateColor = const Color.fromARGB(255, 255, 125, 125);
 
+  // DATA
+  final bool value;
   final String task;
   final bool star;
+  final DateTime? dueDate;
+
   final ValueChanged<bool?>? onChanged;
   final ValueChanged<bool?>? onStarred;
   final VoidCallback? onDelete;
@@ -16,6 +35,7 @@ class ToDoTile extends StatelessWidget {
     required this.value,
     required this.task,
     required this.star,
+    required this.dueDate,
     this.onChanged,
     this.onStarred,
     this.onDelete,
@@ -39,16 +59,15 @@ class ToDoTile extends StatelessWidget {
             children: [
               SlidableAction(
                 autoClose: true,
-                // backgroundColor: const Color.fromARGB(255, 255, 224, 130),
-                backgroundColor: const Color.fromARGB(255, 75, 75, 75),
-                foregroundColor: const Color.fromARGB(255, 255, 215, 0),
+                backgroundColor: _starBackgroundColor,
+                foregroundColor: _starForegroundColor,
                 icon: star ? Icons.star : Icons.star_border,
                 onPressed: (context) => onStarred!(!star),
               ),
               SlidableAction(
                 autoClose: true,
-                backgroundColor: const Color.fromARGB(255, 255, 130, 130),
-                foregroundColor: const Color.fromARGB(255, 0, 0, 0),
+                backgroundColor: _deleteBackgroundColor,
+                foregroundColor: _deleteForegroundColor,
                 icon: Icons.delete_outlined,
                 onPressed: (context) => onDelete!(),
               ),
@@ -60,26 +79,47 @@ class ToDoTile extends StatelessWidget {
             decoration: BoxDecoration(
               color: star
                   ? value
-                      ? const Color.fromARGB(255, 13, 13, 7)
-                      : const Color.fromARGB(255, 25, 25, 10)
-                  : Theme.of(context).cardColor,
+                      ? _starredCompletedTileBackgroundColor
+                      : _starredTileBackgroundColor
+                  : value
+                      ? _completedTileBackgroundColor
+                      : _tileBackgroundColor,
             ),
             child: Row(
               children: [
                 Expanded(
-                  child: Text(
-                    task,
-                    style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w500,
-                        decoration: value ? TextDecoration.lineThrough : null,
-                        decorationThickness: 3,
-                        color: value
-                            ? const Color.fromARGB(255, 100, 100, 100)
-                            : const Color.fromARGB(255, 255, 248, 225)),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    softWrap: true,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        task,
+                        style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w500,
+                            decoration:
+                                value ? TextDecoration.lineThrough : null,
+                            decorationColor: _lineThroughColor,
+                            decorationThickness: 3,
+                            color:
+                                value ? _completedTextColor : _commonTextColor),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        softWrap: true,
+                      ),
+                      if (dueDate != null)
+                        Text(
+                          "Due: ${dueDate!.day} ${DateFormat.MMM().format(dueDate!)}, ${dueDate!.year}",
+                          style: TextStyle(
+                            color: value
+                                ? _completedTextColor
+                                : dueDate!.difference(DateTime.now()).inDays < 1
+                                    ? _pastDueDateColor
+                                    : _dueDateColor,
+                            fontSize: 13,
+                          ),
+                        ),
+                    ],
                   ),
                 ),
                 Transform.scale(
@@ -89,17 +129,19 @@ class ToDoTile extends StatelessWidget {
                     fillColor: WidgetStatePropertyAll(
                       star
                           ? value
-                              ? const Color.fromARGB(255, 13, 13, 7)
-                              : const Color.fromARGB(255, 25, 25, 10)
-                          : Theme.of(context).cardColor,
+                              ? _starredCompletedTileBackgroundColor
+                              : _starredTileBackgroundColor
+                          : value
+                              ? _completedTileBackgroundColor
+                              : _tileBackgroundColor,
                     ),
                     side: WidgetStateBorderSide.resolveWith((states) {
                       if (states.contains(WidgetState.selected)) {
                         return BorderSide(
                           width: 1.5,
                           color: star
-                              ? const Color.fromARGB(255, 13, 13, 7)
-                              : Theme.of(context).cardColor,
+                              ? _starredCompletedTileBackgroundColor
+                              : _completedTileBackgroundColor,
                         );
                       }
                       return const BorderSide(

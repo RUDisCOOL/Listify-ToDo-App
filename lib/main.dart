@@ -46,9 +46,9 @@ class MyApp extends StatelessWidget {
         ),
         scaffoldBackgroundColor: scaffoldBackgroundColor,
         checkboxTheme: const CheckboxThemeData(
-          checkColor: WidgetStatePropertyAll(checkColor),
-          shape: CircleBorder(),
-        ),
+            checkColor: WidgetStatePropertyAll(checkColor),
+            shape: CircleBorder(),
+            visualDensity: VisualDensity(horizontal: -2, vertical: -2)),
         appBarTheme: const AppBarTheme(
           foregroundColor: commonFontColor,
           backgroundColor: scaffoldBackgroundColor,
@@ -58,6 +58,14 @@ class MyApp extends StatelessWidget {
         ),
         inputDecorationTheme: const InputDecorationTheme(
           hintStyle: TextStyle(color: inputHintColor),
+        ),
+        iconButtonTheme: const IconButtonThemeData(
+          style: ButtonStyle(
+            padding: WidgetStatePropertyAll(EdgeInsets.all(0)),
+            minimumSize: WidgetStatePropertyAll(Size(25, 25)),
+            maximumSize: WidgetStatePropertyAll(Size(25, 25)),
+            visualDensity: VisualDensity(horizontal: -2, vertical: -2),
+          ),
         ),
         useMaterial3: true,
       ),

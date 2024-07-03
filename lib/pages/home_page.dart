@@ -162,6 +162,19 @@ class _HomePageState extends State<HomePage> {
             builder: (context) {
               return StatefulBuilder(
                   builder: (BuildContext context, StateSetter setModalState) {
+                void showDueDatePicker() async {
+                  pickedDate = await showDatePicker(
+                    helpText: 'Due Date',
+                    context: context,
+                    initialDate: pickedDate,
+                    firstDate: DateTime(DateTime.now().year - 5),
+                    lastDate: DateTime(DateTime.now().year + 5),
+                  );
+                  setModalState(() {
+                    dueDate = pickedDate;
+                  });
+                }
+
                 return Padding(
                   padding: EdgeInsets.only(
                     left: 30,
@@ -182,121 +195,111 @@ class _HomePageState extends State<HomePage> {
                         ),
                       ),
                       const SizedBox(height: 15),
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Row(
-                            children: [
-                              IconButton(
-                                onPressed: () {
-                                  setModalState(() {
-                                    starred = !starred;
-                                  });
-                                },
-                                icon: Icon(
-                                  starred ? Icons.star : Icons.star_border,
-                                  color: starred
-                                      ? _starForegroundColor
-                                      : _calendarIconColor,
+                          if (dueDate != null) ...[
+                            GestureDetector(
+                              onTap: showDueDatePicker,
+                              child: Container(
+                                padding: const EdgeInsets.only(
+                                  left: 15,
+                                  right: 5,
                                 ),
-                              ),
-                              IconButton(
-                                onPressed: () async {
-                                  pickedDate = await showDatePicker(
-                                    helpText: 'Due Date',
-                                    context: context,
-                                    initialDate: pickedDate,
-                                    firstDate:
-                                        DateTime(DateTime.now().year - 5),
-                                    lastDate: DateTime(DateTime.now().year + 5),
-                                  );
-                                  setModalState(() {
-                                    dueDate = pickedDate;
-                                  });
-                                },
-                                icon: Icon(
-                                  (dueDate == null)
-                                      ? Icons.calendar_today_outlined
-                                      : Icons.calendar_today_rounded,
-                                  color: _calendarIconColor,
+                                decoration: const BoxDecoration(
+                                  borderRadius: BorderRadius.all(
+                                    Radius.circular(10),
+                                  ),
+                                  color: Color.fromARGB(255, 45, 45, 45),
                                 ),
-                              ),
-                              if (dueDate != null) ...[
-                                GestureDetector(
-                                  onTap: () async {
-                                    pickedDate = await showDatePicker(
-                                      helpText: 'Due Date',
-                                      context: context,
-                                      initialDate: pickedDate,
-                                      firstDate:
-                                          DateTime(DateTime.now().year - 5),
-                                      lastDate:
-                                          DateTime(DateTime.now().year + 5),
-                                    );
-                                    setModalState(() {
-                                      dueDate = pickedDate;
-                                    });
-                                  },
-                                  child: Container(
-                                    padding: const EdgeInsets.only(
-                                      left: 15,
-                                      right: 5,
-                                    ),
-                                    decoration: const BoxDecoration(
-                                      borderRadius: BorderRadius.all(
-                                        Radius.circular(10),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  mainAxisSize: MainAxisSize.min,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    Text(
+                                      "Due: ${dueDate!.day} ${DateFormat.MMM().format(dueDate!)}, ${dueDate!.year}",
+                                      style: TextStyle(
+                                        color: _textInputColor,
+                                        fontSize: 15,
                                       ),
-                                      color: Color.fromARGB(255, 45, 45, 45),
                                     ),
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.center,
-                                      children: [
-                                        Text(
-                                          "Due: ${dueDate!.day} ${DateFormat.MMM().format(dueDate!)}, ${dueDate!.year}",
-                                          style: TextStyle(
-                                            color: _textInputColor,
-                                            fontSize: 15,
-                                          ),
-                                        ),
-                                        IconButton(
-                                          onPressed: () {
-                                            setModalState(
-                                              () {
-                                                dueDate = null;
-                                              },
-                                            );
+                                    IconButton(
+                                      onPressed: () {
+                                        setModalState(
+                                          () {
+                                            dueDate = null;
                                           },
-                                          padding: const EdgeInsets.all(0),
-                                          icon: const Icon(Icons.close),
-                                        )
-                                      ],
+                                        );
+                                      },
+                                      padding: const EdgeInsets.all(0),
+                                      icon: const Icon(Icons.close),
+                                    )
+                                  ],
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 5),
+                          ],
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceEvenly,
+                                children: [
+                                  IconButton(
+                                    onPressed: () {
+                                      setModalState(() {
+                                        starred = !starred;
+                                      });
+                                    },
+                                    icon: Icon(
+                                      starred ? Icons.star : Icons.star_border,
+                                      color: starred
+                                          ? _starForegroundColor
+                                          : _calendarIconColor,
                                     ),
                                   ),
-                                )
-                              ],
+                                  IconButton(
+                                    onPressed: showDueDatePicker,
+                                    icon: Icon(
+                                      (dueDate == null)
+                                          ? Icons.calendar_today_outlined
+                                          : Icons.calendar_today_rounded,
+                                      color: _calendarIconColor,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              ElevatedButton(
+                                style: ButtonStyle(
+                                  backgroundColor:
+                                      WidgetStatePropertyAll(_textInputColor),
+                                  foregroundColor:
+                                      WidgetStatePropertyAll(_inputHintColor),
+                                  padding: const WidgetStatePropertyAll(
+                                      EdgeInsets.symmetric(
+                                          vertical: 0, horizontal: 0)),
+                                  minimumSize: const WidgetStatePropertyAll(
+                                      Size(70, 40)),
+                                  maximumSize: const WidgetStatePropertyAll(
+                                      Size(70, 40)),
+                                ),
+                                onPressed: () {
+                                  if (textController.text.isNotEmpty) {
+                                    _addTask(
+                                        textController.text, starred, dueDate);
+                                  }
+                                  Navigator.of(context).pop();
+                                },
+                                child: const Text('Save'),
+                              ),
                             ],
                           ),
-                          ElevatedButton(
-                            style: ButtonStyle(
-                              backgroundColor:
-                                  WidgetStatePropertyAll(_textInputColor),
-                              foregroundColor:
-                                  WidgetStatePropertyAll(_inputHintColor),
-                            ),
-                            onPressed: () {
-                              if (textController.text.isNotEmpty) {
-                                _addTask(textController.text, starred, dueDate);
-                              }
-                              Navigator.of(context).pop();
-                            },
-                            child: const Text('Save'),
-                          ),
                         ],
-                      ),
+                      )
                     ],
                   ),
                 );

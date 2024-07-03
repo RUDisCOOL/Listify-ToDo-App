@@ -150,6 +150,7 @@ class _HomePageState extends State<HomePage> {
         onPressed: () {
           bool starred = false;
           dueDate = null;
+          textController.clear();
 
           showModalBottomSheet(
             shape: const RoundedRectangleBorder(
@@ -183,49 +184,101 @@ class _HomePageState extends State<HomePage> {
                       const SizedBox(height: 15),
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.center,
-                        mainAxisAlignment: MainAxisAlignment.end,
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          if (dueDate != null)
-                            Text(
-                              "Due: ${dueDate!.day} ${DateFormat.MMM().format(dueDate!)}, ${dueDate!.year}",
-                              style: TextStyle(
-                                color: _textInputColor,
-                                fontSize: 16,
-                                backgroundColor: Color.fromARGB(0, 0, 0, 0),
+                          Row(
+                            children: [
+                              IconButton(
+                                onPressed: () {
+                                  setModalState(() {
+                                    starred = !starred;
+                                  });
+                                },
+                                icon: Icon(
+                                  starred ? Icons.star : Icons.star_border,
+                                  color: starred
+                                      ? _starForegroundColor
+                                      : _calendarIconColor,
+                                ),
                               ),
-                            ),
-                          IconButton(
-                            onPressed: () {
-                              setModalState(() {
-                                starred = !starred;
-                              });
-                            },
-                            icon: Icon(
-                              starred ? Icons.star : Icons.star_border,
-                              color: starred
-                                  ? _starForegroundColor
-                                  : _calendarIconColor,
-                            ),
-                          ),
-                          IconButton(
-                            onPressed: () async {
-                              pickedDate = await showDatePicker(
-                                helpText: 'Due Date',
-                                context: context,
-                                initialDate: pickedDate,
-                                firstDate: DateTime(DateTime.now().year - 5),
-                                lastDate: DateTime(DateTime.now().year + 5),
-                              );
-                              setModalState(() {
-                                dueDate = pickedDate;
-                              });
-                            },
-                            icon: Icon(
-                              (dueDate == null)
-                                  ? Icons.calendar_today_outlined
-                                  : Icons.calendar_today_rounded,
-                              color: _calendarIconColor,
-                            ),
+                              IconButton(
+                                onPressed: () async {
+                                  pickedDate = await showDatePicker(
+                                    helpText: 'Due Date',
+                                    context: context,
+                                    initialDate: pickedDate,
+                                    firstDate:
+                                        DateTime(DateTime.now().year - 5),
+                                    lastDate: DateTime(DateTime.now().year + 5),
+                                  );
+                                  setModalState(() {
+                                    dueDate = pickedDate;
+                                  });
+                                },
+                                icon: Icon(
+                                  (dueDate == null)
+                                      ? Icons.calendar_today_outlined
+                                      : Icons.calendar_today_rounded,
+                                  color: _calendarIconColor,
+                                ),
+                              ),
+                              if (dueDate != null) ...[
+                                GestureDetector(
+                                  onTap: () async {
+                                    pickedDate = await showDatePicker(
+                                      helpText: 'Due Date',
+                                      context: context,
+                                      initialDate: pickedDate,
+                                      firstDate:
+                                          DateTime(DateTime.now().year - 5),
+                                      lastDate:
+                                          DateTime(DateTime.now().year + 5),
+                                    );
+                                    setModalState(() {
+                                      dueDate = pickedDate;
+                                    });
+                                  },
+                                  child: Container(
+                                    padding: const EdgeInsets.only(
+                                      left: 15,
+                                      right: 5,
+                                    ),
+                                    decoration: const BoxDecoration(
+                                      borderRadius: BorderRadius.all(
+                                        Radius.circular(10),
+                                      ),
+                                      color: Color.fromARGB(255, 45, 45, 45),
+                                    ),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      children: [
+                                        Text(
+                                          "Due: ${dueDate!.day} ${DateFormat.MMM().format(dueDate!)}, ${dueDate!.year}",
+                                          style: TextStyle(
+                                            color: _textInputColor,
+                                            fontSize: 15,
+                                          ),
+                                        ),
+                                        IconButton(
+                                          onPressed: () {
+                                            setModalState(
+                                              () {
+                                                dueDate = null;
+                                              },
+                                            );
+                                          },
+                                          padding: const EdgeInsets.all(0),
+                                          icon: const Icon(Icons.close),
+                                        )
+                                      ],
+                                    ),
+                                  ),
+                                )
+                              ],
+                            ],
                           ),
                           ElevatedButton(
                             style: ButtonStyle(

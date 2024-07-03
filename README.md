@@ -12,18 +12,18 @@ A simple to-do app with a minimalistic user interface made with flutter.
 
 ### Preview images of the application
 
-<div id='images' style="display:flex;justify-content:center;align-items:center;">
+<div id='images' style="display:flex;flex-direction:column;justify-content:center;align-items:center;">
     
-    <img style="width:200px;padding:5px,0px;" src='./images/HomePage.png' alt='HomePage'>
-    <b>HomePage</b>
-    <img style="width:200px;padding:5px,0px;" src='./images/TaskInputField.png' alt='TaskInputField'>
-    <b>TaskInputField</b>
-    <img style="width:200px;padding:5px,0px;" src='./images/TaskEnteredScreen.png' alt='TaskEnteredScreen'>
-    <b>TaskEnteredScreen</b>
-    <img style="width:200px;padding:5px,0px;" src='./images/SlidableTasks.png' alt='SlidableTasks'>
-    <b>SlidableTasks</b>
-    <img style="width:200px;padding:5px,0px;" src='./images/CompletedTasks.png' alt='CompletedTasks'>
-    <b>CompletedTasks</b>
+<img style="width:200px;padding:5px,0px;" src='./images/HomePage.png' alt='HomePage'>
+<b>HomePage</b>
+<img style="width:200px;padding:5px,0px;" src='./images/TaskInputField.png' alt='TaskInputField'>
+<b>TaskInputField</b>
+<img style="width:200px;padding:5px,0px;" src='./images/TaskEnteredScreen.png' alt='TaskEnteredScreen'>
+<b>TaskEnteredScreen</b>
+<img style="width:200px;padding:5px,0px;" src='./images/SlidableTasks.png' alt='SlidableTasks'>
+<b>SlidableTasks</b>
+<img style="width:200px;padding:5px,0px;" src='./images/CompletedTasks.png' alt='CompletedTasks'>
+<b>CompletedTasks</b>
 
 </div>
 

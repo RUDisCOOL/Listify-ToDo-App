@@ -81,7 +81,7 @@ class _HomePageState extends State<HomePage> {
         'completed': false,
         'starred': starred,
         'dueDate': dueDate,
-        'maxLines': 2,
+        'maxLines': null,
       });
       _sortToDoList();
       db.updateData();
@@ -95,7 +95,7 @@ class _HomePageState extends State<HomePage> {
       db.toDoList[index]['completed'] = false;
       db.toDoList[index]['starred'] = starred;
       db.toDoList[index]['dueDate'] = dueDate;
-      db.toDoList[index]['maxLines'] = 2;
+      db.toDoList[index]['maxLines'] = null;
       _sortToDoList();
       db.updateData();
     });

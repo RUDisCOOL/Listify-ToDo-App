@@ -12,13 +12,9 @@ A simple to-do app with a minimalistic user interface made with flutter.
 
 ### Preview images of the application
 
-<div id='images'>
-    <style>
-        #images{display:flex;justify-content:center;align-items:center;}
-        img{width:200px;}
-        #images-list li{list-style:none;padding:5px;}
-        #images-list{display:flex;flex-direction:column;justify-content:center;align-items:center;}
-    </style>
+<div id='images' style="#images{display:flex;justify-content:center;align-items:center;}img{width:200px;}#images-list li{list-style:none;padding:5px;}#images-list{display:flex;flex-direction:column;justify-content:center;align-items:center;}">
+    
+    
 <ul id='images-list'>
     <li><img src='./images/HomePage.png' alt='HomePage'></li>
     <li><b>HomePage</b></li>

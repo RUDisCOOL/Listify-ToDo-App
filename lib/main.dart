@@ -62,9 +62,7 @@ class MyApp extends StatelessWidget {
         iconButtonTheme: const IconButtonThemeData(
           style: ButtonStyle(
             padding: WidgetStatePropertyAll(EdgeInsets.all(0)),
-            minimumSize: WidgetStatePropertyAll(Size(25, 25)),
-            maximumSize: WidgetStatePropertyAll(Size(25, 25)),
-            visualDensity: VisualDensity(horizontal: -2, vertical: -2),
+            visualDensity: VisualDensity(horizontal: -1.5, vertical: -1.5),
           ),
         ),
         useMaterial3: true,

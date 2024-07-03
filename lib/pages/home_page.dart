@@ -100,6 +100,7 @@ class _HomePageState extends State<HomePage> {
   void _toggleMaxLines(int index, int? maxLines) {
     setState(() {
       db.toDoList[index]['maxLines'] = (maxLines != null) ? null : 2;
+      db.updateData();
     });
   }
 

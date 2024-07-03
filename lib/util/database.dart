@@ -11,6 +11,7 @@ class Database {
         'completed': false,
         'starred': false,
         'dueDate': null,
+        'maxLines': null,
       },
     );
     box.put('ToDoList', toDoList);

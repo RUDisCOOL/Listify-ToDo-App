@@ -81,6 +81,7 @@ class _HomePageState extends State<HomePage> {
         'completed': false,
         'starred': starred,
         'dueDate': dueDate,
+        'maxLines': 2,
       });
       _sortToDoList();
       db.updateData();
@@ -93,6 +94,12 @@ class _HomePageState extends State<HomePage> {
       db.toDoList.removeAt(index);
       _sortToDoList();
       db.updateData();
+    });
+  }
+
+  void _toggleMaxLines(int index, int? maxLines) {
+    setState(() {
+      db.toDoList[index]['maxLines'] = (maxLines != null) ? null : 2;
     });
   }
 
@@ -138,9 +145,11 @@ class _HomePageState extends State<HomePage> {
                 task: db.toDoList[index]['task'],
                 star: db.toDoList[index]['starred'],
                 dueDate: db.toDoList[index]['dueDate'],
+                maxLines: db.toDoList[index]['maxLines'],
                 onChanged: (value) => _toggleTask(index, value),
                 onStarred: (star) => _toggleStar(index, star),
                 onDelete: () => _deleteTask(index),
+                onTaskTap: (maxLines) => _toggleMaxLines(index, maxLines),
               );
             },
           ),
@@ -187,6 +196,8 @@ class _HomePageState extends State<HomePage> {
                     children: [
                       TextField(
                         controller: textController,
+                        keyboardType: TextInputType.multiline,
+                        maxLines:null,
                         autocorrect: true,
                         autofocus: true,
                         style: TextStyle(color: _textInputColor),
@@ -283,14 +294,16 @@ class _HomePageState extends State<HomePage> {
                                       EdgeInsets.symmetric(
                                           vertical: 0, horizontal: 0)),
                                   minimumSize: const WidgetStatePropertyAll(
-                                      Size(70, 40)),
+                                    Size(70, 40),
+                                  ),
                                   maximumSize: const WidgetStatePropertyAll(
-                                      Size(70, 40)),
+                                    Size(70, 40),
+                                  ),
                                 ),
                                 onPressed: () {
-                                  if (textController.text.isNotEmpty) {
+                                  if (textController.text.trim().isNotEmpty) {
                                     _addTask(
-                                        textController.text, starred, dueDate);
+                                        textController.text.trim(), starred, dueDate);
                                   }
                                   Navigator.of(context).pop();
                                 },

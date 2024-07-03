@@ -30,129 +30,139 @@ class ToDoTile extends StatelessWidget {
   final ValueChanged<bool?>? onChanged;
   final ValueChanged<bool?>? onStarred;
   final VoidCallback? onDelete;
+  final Function? onTaskTap;
+  final dynamic maxLines;
 
   const ToDoTile({
     required this.value,
     required this.task,
     required this.star,
     required this.dueDate,
-    this.onChanged,
-    this.onStarred,
-    this.onDelete,
+    required this.maxLines,
+    required this.onChanged,
+    required this.onStarred,
+    required this.onDelete,
+    required this.onTaskTap,
     super.key,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(10),
-      ),
-      margin: const EdgeInsets.all(5),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(10),
-        child: Slidable(
-          key: const ValueKey(0),
-          endActionPane: ActionPane(
-            extentRatio: 0.4,
-            motion: const DrawerMotion(),
-            children: [
-              SlidableAction(
-                autoClose: true,
-                backgroundColor: _starBackgroundColor,
-                foregroundColor: _starForegroundColor,
-                icon: star ? Icons.star : Icons.star_border,
-                onPressed: (context) => onStarred!(!star),
-              ),
-              SlidableAction(
-                autoClose: true,
-                backgroundColor: _deleteBackgroundColor,
-                foregroundColor: _deleteForegroundColor,
-                icon: Icons.delete_outlined,
-                onPressed: (context) => onDelete!(),
-              ),
-            ],
-          ),
-          child: Container(
-            padding:
-                const EdgeInsets.only(left: 10, right: 10, top: 7, bottom: 7),
-            decoration: BoxDecoration(
-              color: star
-                  ? value
-                      ? _starredCompletedTileBackgroundColor
-                      : _starredTileBackgroundColor
-                  : value
-                      ? _completedTileBackgroundColor
-                      : _tileBackgroundColor,
-            ),
-            child: Row(
+    return GestureDetector(
+      onTap: () => onTaskTap!(maxLines),
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10),
+        ),
+        margin: const EdgeInsets.all(5),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(10),
+          child: Slidable(
+            key: const ValueKey(0),
+            endActionPane: ActionPane(
+              extentRatio: 0.4,
+              motion: const DrawerMotion(),
               children: [
-                Expanded(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        task,
-                        style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.w500,
-                            decoration:
-                                value ? TextDecoration.lineThrough : null,
-                            decorationColor: _lineThroughColor,
-                            decorationThickness: 3,
-                            color:
-                                value ? _completedTextColor : _commonTextColor),
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                        softWrap: true,
-                      ),
-                      if (dueDate != null)
-                        Text(
-                          "Due: ${dueDate!.day} ${DateFormat.MMM().format(dueDate!)}, ${dueDate!.year}",
-                          style: TextStyle(
-                            color: value
-                                ? _completedTextColor
-                                : dueDate!.difference(DateTime.now()).inDays < 1
-                                    ? _pastDueDateColor
-                                    : _dueDateColor,
-                            fontSize: 13,
-                          ),
-                        ),
-                    ],
-                  ),
+                SlidableAction(
+                  autoClose: true,
+                  backgroundColor: _starBackgroundColor,
+                  foregroundColor: _starForegroundColor,
+                  icon: star ? Icons.star : Icons.star_border,
+                  onPressed: (context) => onStarred!(!star),
                 ),
-                Transform.scale(
-                  scale: 1.2,
-                  child: Checkbox(
-                    value: value,
-                    fillColor: WidgetStatePropertyAll(
-                      star
-                          ? value
-                              ? _starredCompletedTileBackgroundColor
-                              : _starredTileBackgroundColor
-                          : value
-                              ? _completedTileBackgroundColor
-                              : _tileBackgroundColor,
-                    ),
-                    side: WidgetStateBorderSide.resolveWith((states) {
-                      if (states.contains(WidgetState.selected)) {
-                        return BorderSide(
-                          width: 1.5,
-                          color: star
-                              ? _starredCompletedTileBackgroundColor
-                              : _completedTileBackgroundColor,
-                        );
-                      }
-                      return const BorderSide(
-                        width: 1.5,
-                        color: _borderColor,
-                      );
-                    }),
-                    onChanged: (value) => onChanged!(value),
-                  ),
+                SlidableAction(
+                  autoClose: true,
+                  backgroundColor: _deleteBackgroundColor,
+                  foregroundColor: _deleteForegroundColor,
+                  icon: Icons.delete_outlined,
+                  onPressed: (context) => onDelete!(),
                 ),
               ],
+            ),
+            child: Container(
+              padding:
+                  const EdgeInsets.only(left: 10, right: 10, top: 7, bottom: 7),
+              decoration: BoxDecoration(
+                color: star
+                    ? value
+                        ? _starredCompletedTileBackgroundColor
+                        : _starredTileBackgroundColor
+                    : value
+                        ? _completedTileBackgroundColor
+                        : _tileBackgroundColor,
+              ),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          task,
+                          style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w500,
+                              decoration:
+                                  value ? TextDecoration.lineThrough : null,
+                              decorationColor: _lineThroughColor,
+                              decorationThickness: 3,
+                              color: value
+                                  ? _completedTextColor
+                                  : _commonTextColor),
+                          maxLines: maxLines,
+                          overflow:
+                              maxLines != null ? TextOverflow.ellipsis : null,
+                          softWrap: true,
+                        ),
+                        if (dueDate != null)
+                          Text(
+                            "Due: ${dueDate!.day} ${DateFormat.MMM().format(dueDate!)}, ${dueDate!.year}",
+                            style: TextStyle(
+                              color: value
+                                  ? _completedTextColor
+                                  : dueDate!.difference(DateTime.now()).inDays <
+                                          1
+                                      ? _pastDueDateColor
+                                      : _dueDateColor,
+                              fontSize: 13,
+                            ),
+                          ),
+                      ],
+                    ),
+                  ),
+                  Transform.scale(
+                    scale: 1.2,
+                    child: Checkbox(
+                      value: value,
+                      fillColor: WidgetStatePropertyAll(
+                        star
+                            ? value
+                                ? _starredCompletedTileBackgroundColor
+                                : _starredTileBackgroundColor
+                            : value
+                                ? _completedTileBackgroundColor
+                                : _tileBackgroundColor,
+                      ),
+                      side: WidgetStateBorderSide.resolveWith((states) {
+                        if (states.contains(WidgetState.selected)) {
+                          return BorderSide(
+                            width: 1.5,
+                            color: star
+                                ? _starredCompletedTileBackgroundColor
+                                : _completedTileBackgroundColor,
+                          );
+                        }
+                        return const BorderSide(
+                          width: 1.5,
+                          color: _borderColor,
+                        );
+                      }),
+                      onChanged: (value) => onChanged!(value),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ),

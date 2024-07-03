@@ -89,6 +89,19 @@ class _HomePageState extends State<HomePage> {
     textController.clear();
   }
 
+  void _editTask(String task, bool starred, DateTime? dueDate, index) {
+    setState(() {
+      db.toDoList[index]['task'] = task;
+      db.toDoList[index]['completed'] = false;
+      db.toDoList[index]['starred'] = starred;
+      db.toDoList[index]['dueDate'] = dueDate;
+      db.toDoList[index]['maxLines'] = 2;
+      _sortToDoList();
+      db.updateData();
+    });
+    textController.clear();
+  }
+
   void _deleteTask(index) {
     setState(() {
       db.toDoList.removeAt(index);
@@ -104,6 +117,184 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
+  void _showTaskInputEditField({index}) {
+    bool starred;
+    textController.clear();
+
+    if (index != null) {
+      starred = db.toDoList[index]['starred'];
+      dueDate = db.toDoList[index]['dueDate'];
+      textController.value = TextEditingValue(text: db.toDoList[index]['task']);
+    } else {
+      starred = false;
+      dueDate = null;
+    }
+    showModalBottomSheet(
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20.0)),
+      ),
+      isScrollControlled: true,
+      context: context,
+      elevation: 5,
+      builder: (context) {
+        return StatefulBuilder(
+            builder: (BuildContext context, StateSetter setModalState) {
+          void showDueDatePicker() async {
+            pickedDate = await showDatePicker(
+              helpText: 'Due Date',
+              context: context,
+              initialDate: pickedDate,
+              firstDate: DateTime(DateTime.now().year - 5),
+              lastDate: DateTime(DateTime.now().year + 5),
+            );
+            setModalState(() {
+              dueDate = pickedDate;
+            });
+          }
+
+          return Padding(
+            padding: EdgeInsets.only(
+              left: 30,
+              right: 30,
+              top: 30,
+              bottom: MediaQuery.of(context).viewInsets.bottom + 15,
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextField(
+                  controller: textController,
+                  keyboardType: TextInputType.multiline,
+                  maxLines: null,
+                  autocorrect: true,
+                  autofocus: true,
+                  style: TextStyle(color: _textInputColor),
+                  decoration: const InputDecoration(
+                    hintText: 'Enter a new task',
+                  ),
+                ),
+                const SizedBox(height: 15),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    if (dueDate != null) ...[
+                      GestureDetector(
+                        onTap: showDueDatePicker,
+                        child: Container(
+                          padding: const EdgeInsets.only(
+                            left: 15,
+                            right: 5,
+                          ),
+                          decoration: const BoxDecoration(
+                            borderRadius: BorderRadius.all(
+                              Radius.circular(10),
+                            ),
+                            color: Color.fromARGB(255, 45, 45, 45),
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            mainAxisSize: MainAxisSize.min,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Text(
+                                "Due: ${dueDate!.day} ${DateFormat.MMM().format(dueDate!)}, ${dueDate!.year}",
+                                style: TextStyle(
+                                  color: _textInputColor,
+                                  fontSize: 15,
+                                ),
+                              ),
+                              IconButton(
+                                onPressed: () {
+                                  setModalState(
+                                    () {
+                                      dueDate = null;
+                                    },
+                                  );
+                                },
+                                padding: const EdgeInsets.all(0),
+                                icon: const Icon(Icons.close),
+                              )
+                            ],
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 5),
+                    ],
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            IconButton(
+                              onPressed: () {
+                                setModalState(() {
+                                  starred = !starred;
+                                });
+                              },
+                              icon: Icon(
+                                starred ? Icons.star : Icons.star_border,
+                                color: starred
+                                    ? _starForegroundColor
+                                    : _calendarIconColor,
+                              ),
+                            ),
+                            IconButton(
+                              onPressed: showDueDatePicker,
+                              icon: Icon(
+                                (dueDate == null)
+                                    ? Icons.calendar_today_outlined
+                                    : Icons.calendar_today_rounded,
+                                color: _calendarIconColor,
+                              ),
+                            ),
+                          ],
+                        ),
+                        ElevatedButton(
+                          style: ButtonStyle(
+                            backgroundColor:
+                                WidgetStatePropertyAll(_textInputColor),
+                            foregroundColor:
+                                WidgetStatePropertyAll(_inputHintColor),
+                            padding: const WidgetStatePropertyAll(
+                                EdgeInsets.symmetric(
+                                    vertical: 0, horizontal: 0)),
+                            minimumSize: const WidgetStatePropertyAll(
+                              Size(70, 40),
+                            ),
+                            maximumSize: const WidgetStatePropertyAll(
+                              Size(70, 40),
+                            ),
+                          ),
+                          onPressed: () {
+                            if (textController.text.trim().isNotEmpty) {
+                              if (index != null) {
+                                _editTask(textController.text.trim(), starred,
+                                    dueDate, index);
+                              } else {
+                                _addTask(textController.text.trim(), starred,
+                                    dueDate);
+                              }
+                            } else if (index != null) {
+                              _deleteTask(index);
+                            }
+                            Navigator.of(context).pop();
+                          },
+                          child: const Text('Save'),
+                        ),
+                      ],
+                    ),
+                  ],
+                )
+              ],
+            ),
+          );
+        });
+      },
+    );
+  }
+
   @override
   void initState() {
     if (box.get('ToDoList') == null) {
@@ -111,6 +302,8 @@ class _HomePageState extends State<HomePage> {
     } else {
       db.loadData();
     }
+    _sortToDoList();
+
     super.initState();
   }
 
@@ -151,176 +344,14 @@ class _HomePageState extends State<HomePage> {
                 onStarred: (star) => _toggleStar(index, star),
                 onDelete: () => _deleteTask(index),
                 onTaskTap: (maxLines) => _toggleMaxLines(index, maxLines),
+                onTaskLongPress: () => _showTaskInputEditField(index: index),
               );
             },
           ),
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          bool starred = false;
-          dueDate = null;
-          textController.clear();
-
-          showModalBottomSheet(
-            shape: const RoundedRectangleBorder(
-              borderRadius: BorderRadius.vertical(top: Radius.circular(20.0)),
-            ),
-            isScrollControlled: true,
-            context: context,
-            elevation: 5,
-            builder: (context) {
-              return StatefulBuilder(
-                  builder: (BuildContext context, StateSetter setModalState) {
-                void showDueDatePicker() async {
-                  pickedDate = await showDatePicker(
-                    helpText: 'Due Date',
-                    context: context,
-                    initialDate: pickedDate,
-                    firstDate: DateTime(DateTime.now().year - 5),
-                    lastDate: DateTime(DateTime.now().year + 5),
-                  );
-                  setModalState(() {
-                    dueDate = pickedDate;
-                  });
-                }
-
-                return Padding(
-                  padding: EdgeInsets.only(
-                    left: 30,
-                    right: 30,
-                    top: 30,
-                    bottom: MediaQuery.of(context).viewInsets.bottom + 15,
-                  ),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      TextField(
-                        controller: textController,
-                        keyboardType: TextInputType.multiline,
-                        maxLines:null,
-                        autocorrect: true,
-                        autofocus: true,
-                        style: TextStyle(color: _textInputColor),
-                        decoration: const InputDecoration(
-                          hintText: 'Enter a new task',
-                        ),
-                      ),
-                      const SizedBox(height: 15),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          if (dueDate != null) ...[
-                            GestureDetector(
-                              onTap: showDueDatePicker,
-                              child: Container(
-                                padding: const EdgeInsets.only(
-                                  left: 15,
-                                  right: 5,
-                                ),
-                                decoration: const BoxDecoration(
-                                  borderRadius: BorderRadius.all(
-                                    Radius.circular(10),
-                                  ),
-                                  color: Color.fromARGB(255, 45, 45, 45),
-                                ),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  mainAxisSize: MainAxisSize.min,
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [
-                                    Text(
-                                      "Due: ${dueDate!.day} ${DateFormat.MMM().format(dueDate!)}, ${dueDate!.year}",
-                                      style: TextStyle(
-                                        color: _textInputColor,
-                                        fontSize: 15,
-                                      ),
-                                    ),
-                                    IconButton(
-                                      onPressed: () {
-                                        setModalState(
-                                          () {
-                                            dueDate = null;
-                                          },
-                                        );
-                                      },
-                                      padding: const EdgeInsets.all(0),
-                                      icon: const Icon(Icons.close),
-                                    )
-                                  ],
-                                ),
-                              ),
-                            ),
-                            const SizedBox(height: 5),
-                          ],
-                          Row(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceEvenly,
-                                children: [
-                                  IconButton(
-                                    onPressed: () {
-                                      setModalState(() {
-                                        starred = !starred;
-                                      });
-                                    },
-                                    icon: Icon(
-                                      starred ? Icons.star : Icons.star_border,
-                                      color: starred
-                                          ? _starForegroundColor
-                                          : _calendarIconColor,
-                                    ),
-                                  ),
-                                  IconButton(
-                                    onPressed: showDueDatePicker,
-                                    icon: Icon(
-                                      (dueDate == null)
-                                          ? Icons.calendar_today_outlined
-                                          : Icons.calendar_today_rounded,
-                                      color: _calendarIconColor,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              ElevatedButton(
-                                style: ButtonStyle(
-                                  backgroundColor:
-                                      WidgetStatePropertyAll(_textInputColor),
-                                  foregroundColor:
-                                      WidgetStatePropertyAll(_inputHintColor),
-                                  padding: const WidgetStatePropertyAll(
-                                      EdgeInsets.symmetric(
-                                          vertical: 0, horizontal: 0)),
-                                  minimumSize: const WidgetStatePropertyAll(
-                                    Size(70, 40),
-                                  ),
-                                  maximumSize: const WidgetStatePropertyAll(
-                                    Size(70, 40),
-                                  ),
-                                ),
-                                onPressed: () {
-                                  if (textController.text.trim().isNotEmpty) {
-                                    _addTask(
-                                        textController.text.trim(), starred, dueDate);
-                                  }
-                                  Navigator.of(context).pop();
-                                },
-                                child: const Text('Save'),
-                              ),
-                            ],
-                          ),
-                        ],
-                      )
-                    ],
-                  ),
-                );
-              });
-            },
-          );
-        },
+        onPressed: _showTaskInputEditField,
         child: const Icon(Icons.add),
       ),
     );

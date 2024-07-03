@@ -26,12 +26,13 @@ class ToDoTile extends StatelessWidget {
   final String task;
   final bool star;
   final DateTime? dueDate;
+  final dynamic maxLines;
 
   final ValueChanged<bool?>? onChanged;
   final ValueChanged<bool?>? onStarred;
   final VoidCallback? onDelete;
   final Function? onTaskTap;
-  final dynamic maxLines;
+  final Function? onTaskLongPress;
 
   const ToDoTile({
     required this.value,
@@ -43,6 +44,7 @@ class ToDoTile extends StatelessWidget {
     required this.onStarred,
     required this.onDelete,
     required this.onTaskTap,
+    required this.onTaskLongPress,
     super.key,
   });
 
@@ -50,6 +52,7 @@ class ToDoTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () => onTaskTap!(maxLines),
+      onLongPress: () => onTaskLongPress!(),
       child: Container(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(10),
@@ -112,7 +115,7 @@ class ToDoTile extends StatelessWidget {
                                   : _commonTextColor),
                           maxLines: maxLines,
                           overflow:
-                              maxLines != null ? TextOverflow.ellipsis : null,
+                              maxLines != null ? TextOverflow.fade : null,
                           softWrap: true,
                         ),
                         if (dueDate != null)

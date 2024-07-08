@@ -12,6 +12,7 @@ const borderColor = Color.fromARGB(255, 255, 236, 179);
 const fabColor = Color.fromARGB(255, 255, 224, 130);
 const bottomSheetBackgroundColor = Color.fromARGB(255, 30, 30, 30);
 const inputHintColor = Color.fromARGB(255, 135, 135, 120);
+const buttonForegroundColor = Color.fromARGB(255, 85, 85, 70);
 
 void main() async {
   await Hive.initFlutter();
@@ -63,6 +64,22 @@ class MyApp extends StatelessWidget {
           style: ButtonStyle(
             padding: WidgetStatePropertyAll(EdgeInsets.all(0)),
             visualDensity: VisualDensity(horizontal: -1.5, vertical: -1.5),
+          ),
+        ),
+        dialogTheme:
+            const DialogTheme(backgroundColor: bottomSheetBackgroundColor),
+        elevatedButtonTheme: const ElevatedButtonThemeData(
+          style: ButtonStyle(
+            backgroundColor: WidgetStatePropertyAll(commonFontColor),
+            foregroundColor: WidgetStatePropertyAll(buttonForegroundColor),
+            padding: WidgetStatePropertyAll(
+                EdgeInsets.symmetric(vertical: 0, horizontal: 0)),
+            minimumSize: WidgetStatePropertyAll(
+              Size(70, 40),
+            ),
+            maximumSize: WidgetStatePropertyAll(
+              Size(70, 40),
+            ),
           ),
         ),
         useMaterial3: true,

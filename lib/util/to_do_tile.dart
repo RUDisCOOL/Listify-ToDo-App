@@ -2,24 +2,24 @@ import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:intl/intl.dart';
 
-const _borderColor = Color.fromARGB(255, 255, 236, 179);
+const borderColor = Color.fromARGB(255, 255, 236, 179);
 
 class ToDoTile extends StatelessWidget {
   // Colors
-  final _tileBackgroundColor = const Color.fromARGB(255, 45, 45, 45);
-  final _completedTileBackgroundColor = const Color.fromARGB(255, 15, 15, 15);
-  final _starredCompletedTileBackgroundColor =
+  final tileBackgroundColor = const Color.fromARGB(255, 45, 45, 45);
+  final completedTileBackgroundColor = const Color.fromARGB(255, 15, 15, 15);
+  final starredCompletedTileBackgroundColor =
       const Color.fromARGB(255, 25, 25, 5);
-  final _starredTileBackgroundColor = const Color.fromARGB(255, 45, 45, 10);
-  final _commonTextColor = const Color.fromARGB(255, 255, 248, 225);
-  final _completedTextColor = const Color.fromARGB(255, 100, 100, 100);
-  final _lineThroughColor = const Color.fromARGB(255, 52, 52, 52);
-  final _starBackgroundColor = const Color.fromARGB(255, 75, 75, 75);
-  final _starForegroundColor = const Color.fromARGB(255, 255, 215, 0);
-  final _deleteBackgroundColor = const Color.fromARGB(255, 255, 125, 125);
-  final _deleteForegroundColor = const Color.fromARGB(255, 0, 0, 0);
-  final _dueDateColor = const Color.fromARGB(255, 170, 165, 150);
-  final _pastDueDateColor = const Color.fromARGB(255, 255, 125, 125);
+  final starredTileBackgroundColor = const Color.fromARGB(255, 45, 45, 10);
+  final commonTextColor = const Color.fromARGB(255, 255, 248, 225);
+  final completedTextColor = const Color.fromARGB(255, 100, 100, 100);
+  final lineThroughColor = const Color.fromARGB(255, 52, 52, 52);
+  final starBackgroundColor = const Color.fromARGB(255, 75, 75, 75);
+  final starForegroundColor = const Color.fromARGB(255, 255, 215, 0);
+  final deleteBackgroundColor = const Color.fromARGB(255, 255, 125, 125);
+  final deleteForegroundColor = const Color.fromARGB(255, 0, 0, 0);
+  final dueDateColor = const Color.fromARGB(255, 170, 165, 150);
+  final pastDueDateColor = const Color.fromARGB(255, 255, 125, 125);
 
   // DATA
   final bool value;
@@ -68,15 +68,15 @@ class ToDoTile extends StatelessWidget {
               children: [
                 SlidableAction(
                   autoClose: true,
-                  backgroundColor: _starBackgroundColor,
-                  foregroundColor: _starForegroundColor,
+                  backgroundColor: starBackgroundColor,
+                  foregroundColor: starForegroundColor,
                   icon: star ? Icons.star : Icons.star_border,
                   onPressed: (context) => onStarred!(!star),
                 ),
                 SlidableAction(
                   autoClose: true,
-                  backgroundColor: _deleteBackgroundColor,
-                  foregroundColor: _deleteForegroundColor,
+                  backgroundColor: deleteBackgroundColor,
+                  foregroundColor: deleteForegroundColor,
                   icon: Icons.delete_outlined,
                   onPressed: (context) => onDelete!(),
                 ),
@@ -88,11 +88,11 @@ class ToDoTile extends StatelessWidget {
               decoration: BoxDecoration(
                 color: star
                     ? value
-                        ? _starredCompletedTileBackgroundColor
-                        : _starredTileBackgroundColor
+                        ? starredCompletedTileBackgroundColor
+                        : starredTileBackgroundColor
                     : value
-                        ? _completedTileBackgroundColor
-                        : _tileBackgroundColor,
+                        ? completedTileBackgroundColor
+                        : tileBackgroundColor,
               ),
               child: Row(
                 children: [
@@ -108,14 +108,13 @@ class ToDoTile extends StatelessWidget {
                               fontWeight: FontWeight.w500,
                               decoration:
                                   value ? TextDecoration.lineThrough : null,
-                              decorationColor: _lineThroughColor,
+                              decorationColor: lineThroughColor,
                               decorationThickness: 3,
                               color: value
-                                  ? _completedTextColor
-                                  : _commonTextColor),
+                                  ? completedTextColor
+                                  : commonTextColor),
                           maxLines: maxLines,
-                          overflow:
-                              maxLines != null ? TextOverflow.fade : null,
+                          overflow: maxLines != null ? TextOverflow.fade : null,
                           softWrap: true,
                         ),
                         if (dueDate != null)
@@ -123,11 +122,11 @@ class ToDoTile extends StatelessWidget {
                             "Due: ${dueDate!.day} ${DateFormat.MMM().format(dueDate!)}, ${dueDate!.year}",
                             style: TextStyle(
                               color: value
-                                  ? _completedTextColor
+                                  ? completedTextColor
                                   : dueDate!.difference(DateTime.now()).inDays <
                                           1
-                                      ? _pastDueDateColor
-                                      : _dueDateColor,
+                                      ? pastDueDateColor
+                                      : dueDateColor,
                               fontSize: 13,
                             ),
                           ),
@@ -141,26 +140,28 @@ class ToDoTile extends StatelessWidget {
                       fillColor: WidgetStatePropertyAll(
                         star
                             ? value
-                                ? _starredCompletedTileBackgroundColor
-                                : _starredTileBackgroundColor
+                                ? starredCompletedTileBackgroundColor
+                                : starredTileBackgroundColor
                             : value
-                                ? _completedTileBackgroundColor
-                                : _tileBackgroundColor,
+                                ? completedTileBackgroundColor
+                                : tileBackgroundColor,
                       ),
-                      side: WidgetStateBorderSide.resolveWith((states) {
-                        if (states.contains(WidgetState.selected)) {
-                          return BorderSide(
+                      side: WidgetStateBorderSide.resolveWith(
+                        (states) {
+                          if (states.contains(WidgetState.selected)) {
+                            return BorderSide(
+                              width: 1.5,
+                              color: star
+                                  ? starredCompletedTileBackgroundColor
+                                  : completedTileBackgroundColor,
+                            );
+                          }
+                          return const BorderSide(
                             width: 1.5,
-                            color: star
-                                ? _starredCompletedTileBackgroundColor
-                                : _completedTileBackgroundColor,
+                            color: borderColor,
                           );
-                        }
-                        return const BorderSide(
-                          width: 1.5,
-                          color: _borderColor,
-                        );
-                      }),
+                        },
+                      ),
                       onChanged: (value) => onChanged!(value),
                     ),
                   ),

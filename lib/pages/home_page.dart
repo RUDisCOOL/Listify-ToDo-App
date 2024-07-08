@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hive_flutter/adapters.dart';
+import 'package:to_do_app/util/list_name_tile.dart';
 import 'package:to_do_app/util/to_do_tile.dart';
 import 'package:to_do_app/util/database.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
@@ -21,13 +22,65 @@ class _HomePageState extends State<HomePage> {
     seedColor: const Color.fromARGB(255, 255, 248, 225),
     brightness: Brightness.dark,
   ).primary;
-  final _inputHintColor = const Color.fromARGB(255, 85, 85, 70);
 
   Box box = Hive.box('myTasks');
   Database db = Database();
   final textController = TextEditingController();
   DateTime? dueDate;
   DateTime? pickedDate;
+
+  void _inputOrEditListName({index}) {
+    textController.clear();
+    if (index != null) {
+      textController.text = db.allListNames[index];
+    }
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          content: TextField(
+            autofocus: true,
+            controller: textController,
+            decoration:
+                const InputDecoration(hintText: 'Enter the a new list-name'),
+          ),
+          actions: [
+            ElevatedButton(
+              onPressed: () {
+                if (index != null && textController.text.isNotEmpty) {
+                  _editListName(index, textController.text);
+                } else if (textController.text.isNotEmpty) {
+                  _createNewList(textController.text);
+                }
+                Navigator.of(context).pop();
+              },
+              child: const Text('Save'),
+            )
+          ],
+        );
+      },
+    );
+  }
+
+  void _createNewList(String listName) {
+    setState(() {
+      db.allListNames.add(listName);
+    });
+  }
+
+  void _editListName(index, String newListName) {
+    setState(() {
+      db.allListNames[index] = newListName;
+    });
+  }
+
+  void _showListItems() {}
+
+  void _deleteList(index) {
+    setState(() {
+      db.allListNames.removeAt(index);
+    });
+  }
 
   void _sortToDoList() {
     List<Map<dynamic, dynamic>> starredTasks = [];
@@ -252,21 +305,6 @@ class _HomePageState extends State<HomePage> {
                           ],
                         ),
                         ElevatedButton(
-                          style: ButtonStyle(
-                            backgroundColor:
-                                WidgetStatePropertyAll(_textInputColor),
-                            foregroundColor:
-                                WidgetStatePropertyAll(_inputHintColor),
-                            padding: const WidgetStatePropertyAll(
-                                EdgeInsets.symmetric(
-                                    vertical: 0, horizontal: 0)),
-                            minimumSize: const WidgetStatePropertyAll(
-                              Size(70, 40),
-                            ),
-                            maximumSize: const WidgetStatePropertyAll(
-                              Size(70, 40),
-                            ),
-                          ),
                           onPressed: () {
                             if (textController.text.trim().isNotEmpty) {
                               if (index != null) {
@@ -321,6 +359,47 @@ class _HomePageState extends State<HomePage> {
         scrolledUnderElevation: 0,
         backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         centerTitle: true,
+      ),
+      drawer: Drawer(
+        child: SafeArea(
+          child: Column(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(16.0),
+                alignment: Alignment.center,
+                child: const Text(
+                  'Your Lists',
+                  style: TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.w500,
+                      letterSpacing: 3),
+                ),
+              ),
+              Expanded(
+                child: ListView.builder(
+                  padding: const EdgeInsets.all(8),
+                  itemCount: db.allListNames.length,
+                  itemBuilder: (context, index) {
+                    return ListNameTile(
+                        listName: db.allListNames[index],
+                        onDelete: () => _deleteList(index),
+                        onSelected: () => _showListItems,
+                        onEdit: () => _inputOrEditListName(index: index));
+                  },
+                ),
+              ),
+              Container(
+                padding: const EdgeInsets.all(16.0),
+                alignment: Alignment.bottomRight,
+                child: FloatingActionButton.extended(
+                  onPressed: _inputOrEditListName,
+                  label: const Text('New List'),
+                  icon: const Icon(Icons.add),
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: Padding(

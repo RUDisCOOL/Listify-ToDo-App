@@ -3,6 +3,10 @@ import 'package:hive_flutter/adapters.dart';
 class Database {
   final box = Hive.box('myTasks');
   List<dynamic> toDoList = [];
+  List<String> allListNames = [
+    'All Tasks',
+    'New List',
+  ];
 
   void createInitialData() {
     toDoList.addAll(
@@ -54,14 +58,14 @@ class Database {
         },
       ],
     );
-    box.put('ToDoList', toDoList);
+    box.put('AllTasks', toDoList);
   }
 
   void loadData() {
-    toDoList = box.get('ToDoList');
+    toDoList = box.get('AllTasks');
   }
 
   void updateData() {
-    box.put('ToDoList', toDoList);
+    box.put('AllTasks', toDoList);
   }
 }

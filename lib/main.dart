@@ -25,16 +25,15 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      locale: const Locale('en', 'IN'), // Set the locale to India
+      locale: const Locale('en', 'IN'),
       localizationsDelegates: const [
         GlobalMaterialLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
       ],
       supportedLocales: const [
-        Locale('en', 'US'), // English, US
-        Locale('en', 'IN'), // English, India
-        // Add other supported locales here
+        Locale('en', 'US'),
+        Locale('en', 'IN'),
       ],
       debugShowCheckedModeBanner: false,
       home: const HomePage(),

@@ -30,14 +30,18 @@ class ListNameTile extends StatelessWidget {
         margin: const EdgeInsets.all(8.0),
         child: Padding(
           padding: const EdgeInsets.only(
-              left: 15.0, right: 10.0, top: 5.0, bottom: 5.0),
+              left: 15.0, right: 10.0, top: 8.0, bottom: 8.0),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                listName,
-                style:
-                    const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+              Expanded(
+                child: Text(
+                  listName,
+                  maxLines: null,
+                  softWrap: true,
+                  style: const TextStyle(
+                      fontSize: 16, fontWeight: FontWeight.w500),
+                ),
               ),
               IconButton(
                 onPressed: () {

@@ -23,41 +23,74 @@ class _HomePageState extends State<HomePage> {
     brightness: Brightness.dark,
   ).primary;
 
+  final textController = TextEditingController();
   Box box = Hive.box('myTasks');
   Database db = Database();
-  final textController = TextEditingController();
   DateTime? dueDate;
   DateTime? pickedDate;
+  String selectedList = 'All Tasks';
+
+  void setSelectedList(String selectedListName) {
+    setState(() {
+      selectedList = selectedListName;
+      db.selectedList = selectedListName;
+      if (box.get(db.selectedList) == null) {
+        db.createInitialData();
+      } else {
+        db.loadData();
+      }
+    });
+    Navigator.of(context).pop();
+  }
 
   void _inputOrEditListName({index}) {
     textController.clear();
+    String listName;
+    String? errorName;
     if (index != null) {
       textController.text = db.allListNames[index];
     }
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        return AlertDialog(
-          content: TextField(
-            autofocus: true,
-            controller: textController,
-            decoration:
-                const InputDecoration(hintText: 'Enter the a new list-name'),
-          ),
-          actions: [
-            ElevatedButton(
-              onPressed: () {
-                if (index != null && textController.text.isNotEmpty) {
-                  _editListName(index, textController.text);
-                } else if (textController.text.isNotEmpty) {
-                  _createNewList(textController.text);
-                }
-                Navigator.of(context).pop();
+        return StatefulBuilder(builder: (context, setState) {
+          return AlertDialog(
+            content: TextField(
+              autofocus: true,
+              controller: textController,
+              maxLength: 16,
+              decoration: InputDecoration(
+                hintText: 'Enter the a new list-name',
+                errorText: errorName,
+              ),
+              onChanged: (listName) => {
+                setState(() {
+                  if (db.alreadyExists(listName.trim())) {
+                    errorName = 'List already exists';
+                  } else {
+                    errorName = null;
+                  }
+                })
               },
-              child: const Text('Save'),
-            )
-          ],
-        );
+            ),
+            actions: [
+              ElevatedButton(
+                onPressed: () {
+                  listName = textController.text.trim();
+                  if (!db.alreadyExists(listName)) {
+                    if (index != null && listName.isNotEmpty) {
+                      _editListName(index, listName);
+                    } else if (listName.isNotEmpty) {
+                      _createNewList(listName);
+                    }
+                    Navigator.of(context).pop();
+                  }
+                },
+                child: const Text('Save'),
+              )
+            ],
+          );
+        });
       },
     );
   }
@@ -65,20 +98,22 @@ class _HomePageState extends State<HomePage> {
   void _createNewList(String listName) {
     setState(() {
       db.allListNames.add(listName);
+      db.updateLists();
     });
   }
 
   void _editListName(index, String newListName) {
     setState(() {
-      db.allListNames[index] = newListName;
+      db.editListName(index, newListName);
+      setSelectedList(newListName);
     });
   }
 
-  void _showListItems() {}
-
   void _deleteList(index) {
     setState(() {
+      db.deleteList(db.allListNames[index]);
       db.allListNames.removeAt(index);
+      setSelectedList('All Tasks');
     });
   }
 
@@ -335,14 +370,14 @@ class _HomePageState extends State<HomePage> {
 
   @override
   void initState() {
-    if (box.get('ToDoList') == null) {
+    super.initState();
+    if (box.get(selectedList) == null) {
       db.createInitialData();
     } else {
+      db.loadLists();
       db.loadData();
     }
     _sortToDoList();
-
-    super.initState();
   }
 
   @override
@@ -350,7 +385,7 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          'Listify',
+          selectedList == 'All Tasks' ? 'Listify' : selectedList,
           style: GoogleFonts.pacifico(
             fontSize: 28,
             fontWeight: FontWeight.w500,
@@ -375,16 +410,18 @@ class _HomePageState extends State<HomePage> {
                       letterSpacing: 3),
                 ),
               ),
+              const Divider(),
               Expanded(
                 child: ListView.builder(
                   padding: const EdgeInsets.all(8),
                   itemCount: db.allListNames.length,
                   itemBuilder: (context, index) {
                     return ListNameTile(
-                        listName: db.allListNames[index],
-                        onDelete: () => _deleteList(index),
-                        onSelected: () => _showListItems,
-                        onEdit: () => _inputOrEditListName(index: index));
+                      listName: db.allListNames[index],
+                      onDelete: () => _deleteList(index),
+                      onEdit: () => _inputOrEditListName(index: index),
+                      onSelected: () => setSelectedList(db.allListNames[index]),
+                    );
                   },
                 ),
               ),

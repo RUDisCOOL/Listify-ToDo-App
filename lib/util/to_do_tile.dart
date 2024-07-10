@@ -28,7 +28,6 @@ class ToDoTile extends StatelessWidget {
   final DateTime? dueDate;
   final dynamic maxLines;
   final String listName;
-  final String id;
 
   final ValueChanged<bool?> onChanged;
   final ValueChanged<bool> onStarred;
@@ -43,7 +42,6 @@ class ToDoTile extends StatelessWidget {
     required this.dueDate,
     required this.maxLines,
     required this.listName,
-    required this.id,
     required this.onChanged,
     required this.onStarred,
     required this.onDelete,
@@ -119,11 +117,6 @@ class ToDoTile extends StatelessWidget {
                           maxLines: maxLines,
                           overflow: maxLines != null ? TextOverflow.fade : null,
                           softWrap: true,
-                        ),
-                        Text(
-                          id,
-                          style: const TextStyle(
-                              color: Color.fromARGB(255, 244, 67, 54)),
                         ),
                         Row(
                           children: [

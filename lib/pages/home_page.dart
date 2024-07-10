@@ -154,9 +154,9 @@ class _HomePageState extends State<HomePage> {
       final listName = db.toDoList[index]['listName'];
       final id = db.toDoList[index]['id'];
       if (selectedList != 'All Tasks' && listName != 'All Tasks') {
-        db.checkFromAllTasks( value, id);
+        db.checkFromAllTasks(value, id);
       } else if (selectedList == 'All Tasks' && listName != selectedList) {
-        db.checkFromList( value, listName, id);
+        db.checkFromList(value, listName, id);
       }
       db.toDoList[index]['completed'] = value!;
       _sortToDoList();
@@ -169,9 +169,9 @@ class _HomePageState extends State<HomePage> {
       final listName = db.toDoList[index]['listName'];
       final id = db.toDoList[index]['id'];
       if (selectedList != 'All Tasks' && listName != 'All Tasks') {
-        db.starFromAllTasks( star, id);
+        db.starFromAllTasks(star, id);
       } else if (selectedList == 'All Tasks' && listName != selectedList) {
-        db.starFromList( star, listName, id);
+        db.starFromList(star, listName, id);
       }
       db.toDoList[index]['starred'] = star;
       _sortToDoList();
@@ -544,7 +544,6 @@ class _HomePageState extends State<HomePage> {
                 dueDate: db.toDoList[index]['dueDate'],
                 maxLines: db.toDoList[index]['maxLines'],
                 listName: db.toDoList[index]['listName'],
-                id: db.toDoList[index]['id'],
                 onChanged: (value) => _toggleTask(index, value),
                 onStarred: (star) => _toggleStar(index, star),
                 onDelete: () => _deleteTask(index),

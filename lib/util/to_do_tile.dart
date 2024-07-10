@@ -27,9 +27,11 @@ class ToDoTile extends StatelessWidget {
   final bool star;
   final DateTime? dueDate;
   final dynamic maxLines;
+  final String listName;
+  final String id;
 
-  final ValueChanged<bool?>? onChanged;
-  final ValueChanged<bool?>? onStarred;
+  final ValueChanged<bool?> onChanged;
+  final ValueChanged<bool> onStarred;
   final VoidCallback? onDelete;
   final Function? onTaskTap;
   final Function? onTaskLongPress;
@@ -40,6 +42,8 @@ class ToDoTile extends StatelessWidget {
     required this.star,
     required this.dueDate,
     required this.maxLines,
+    required this.listName,
+    required this.id,
     required this.onChanged,
     required this.onStarred,
     required this.onDelete,
@@ -71,7 +75,7 @@ class ToDoTile extends StatelessWidget {
                   backgroundColor: starBackgroundColor,
                   foregroundColor: starForegroundColor,
                   icon: star ? Icons.star : Icons.star_border,
-                  onPressed: (context) => onStarred!(!star),
+                  onPressed: (context) => onStarred(!star),
                 ),
                 SlidableAction(
                   autoClose: true,
@@ -110,26 +114,49 @@ class ToDoTile extends StatelessWidget {
                                   value ? TextDecoration.lineThrough : null,
                               decorationColor: lineThroughColor,
                               decorationThickness: 3,
-                              color: value
-                                  ? completedTextColor
-                                  : commonTextColor),
+                              color:
+                                  value ? completedTextColor : commonTextColor),
                           maxLines: maxLines,
                           overflow: maxLines != null ? TextOverflow.fade : null,
                           softWrap: true,
                         ),
-                        if (dueDate != null)
-                          Text(
-                            "Due: ${dueDate!.day} ${DateFormat.MMM().format(dueDate!)}, ${dueDate!.year}",
-                            style: TextStyle(
-                              color: value
-                                  ? completedTextColor
-                                  : dueDate!.difference(DateTime.now()).inDays <
-                                          1
-                                      ? pastDueDateColor
-                                      : dueDateColor,
-                              fontSize: 13,
+                        Text(
+                          id,
+                          style: const TextStyle(
+                              color: Color.fromARGB(255, 244, 67, 54)),
+                        ),
+                        Row(
+                          children: [
+                            if (dueDate != null)
+                              Text(
+                                "Due: ${dueDate!.day} ${DateFormat.MMM().format(dueDate!)}, ${dueDate!.year}",
+                                style: TextStyle(
+                                  color: value
+                                      ? completedTextColor
+                                      : dueDate!
+                                                  .difference(DateTime.now())
+                                                  .inDays <
+                                              1
+                                          ? pastDueDateColor
+                                          : dueDateColor,
+                                  fontSize: 13,
+                                ),
+                              ),
+                            Card.filled(
+                              color: const Color.fromARGB(255, 20, 90, 150),
+                              shape: const RoundedRectangleBorder(
+                                borderRadius: BorderRadius.all(
+                                  Radius.circular(20),
+                                ),
+                              ),
+                              child: Padding(
+                                padding: const EdgeInsets.only(
+                                    left: 8, right: 8, top: 4, bottom: 4),
+                                child: Text(listName),
+                              ),
                             ),
-                          ),
+                          ],
+                        )
                       ],
                     ),
                   ),
@@ -162,7 +189,7 @@ class ToDoTile extends StatelessWidget {
                           );
                         },
                       ),
-                      onChanged: (value) => onChanged!(value),
+                      onChanged: (value) => onChanged(value),
                     ),
                   ),
                 ],

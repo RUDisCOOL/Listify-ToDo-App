@@ -40,7 +40,9 @@ class ListNameTile extends StatelessWidget {
                   maxLines: null,
                   softWrap: true,
                   style: const TextStyle(
-                      fontSize: 16, fontWeight: FontWeight.w500),
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
               ),
               IconButton(

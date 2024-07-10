@@ -6,6 +6,7 @@ import 'package:to_do_app/util/to_do_tile.dart';
 import 'package:to_do_app/util/database.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:intl/intl.dart';
+import 'package:uuid/v4.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -24,6 +25,7 @@ class _HomePageState extends State<HomePage> {
   ).primary;
 
   final textController = TextEditingController();
+  UuidV4 uuid = const UuidV4();
   Box box = Hive.box('myTasks');
   Database db = Database();
   DateTime? dueDate;
@@ -39,6 +41,7 @@ class _HomePageState extends State<HomePage> {
       } else {
         db.loadData();
       }
+      _sortToDoList();
     });
     Navigator.of(context).pop();
   }
@@ -148,15 +151,29 @@ class _HomePageState extends State<HomePage> {
 
   void _toggleTask(int index, bool? value) {
     setState(() {
+      final listName = db.toDoList[index]['listName'];
+      final id = db.toDoList[index]['id'];
+      if (selectedList != 'All Tasks' && listName != 'All Tasks') {
+        db.checkFromAllTasks( value, id);
+      } else if (selectedList == 'All Tasks' && listName != selectedList) {
+        db.checkFromList( value, listName, id);
+      }
       db.toDoList[index]['completed'] = value!;
       _sortToDoList();
       db.updateData();
     });
   }
 
-  void _toggleStar(int index, bool? star) {
+  void _toggleStar(int index, bool star) {
     setState(() {
-      db.toDoList[index]['starred'] = star!;
+      final listName = db.toDoList[index]['listName'];
+      final id = db.toDoList[index]['id'];
+      if (selectedList != 'All Tasks' && listName != 'All Tasks') {
+        db.starFromAllTasks( star, id);
+      } else if (selectedList == 'All Tasks' && listName != selectedList) {
+        db.starFromList( star, listName, id);
+      }
+      db.toDoList[index]['starred'] = star;
       _sortToDoList();
       db.updateData();
     });
@@ -164,13 +181,27 @@ class _HomePageState extends State<HomePage> {
 
   void _addTask(String task, bool starred, DateTime? dueDate) {
     setState(() {
+      var id = uuid.generate();
       db.toDoList.add({
+        'id': id,
         'task': task,
         'completed': false,
         'starred': starred,
         'dueDate': dueDate,
         'maxLines': null,
+        'listName': selectedList,
       });
+      if (selectedList != 'All Tasks') {
+        db.addToAllTasks({
+          'id': id,
+          'task': task,
+          'completed': false,
+          'starred': starred,
+          'dueDate': dueDate,
+          'maxLines': null,
+          'listName': selectedList,
+        });
+      }
       _sortToDoList();
       db.updateData();
     });
@@ -179,6 +210,13 @@ class _HomePageState extends State<HomePage> {
 
   void _editTask(String task, bool starred, DateTime? dueDate, index) {
     setState(() {
+      final listName = db.toDoList[index]['listName'];
+      final id = db.toDoList[index]['id'];
+      if (selectedList != 'All Tasks' && listName != 'All Tasks') {
+        db.editFromAllTasks(task, starred, dueDate, id);
+      } else if (selectedList == 'All Tasks' && listName != selectedList) {
+        db.editFromList(task, starred, dueDate, listName, id);
+      }
       db.toDoList[index]['task'] = task;
       db.toDoList[index]['completed'] = false;
       db.toDoList[index]['starred'] = starred;
@@ -192,6 +230,13 @@ class _HomePageState extends State<HomePage> {
 
   void _deleteTask(index) {
     setState(() {
+      final listName = db.toDoList[index]['listName'];
+      final id = db.toDoList[index]['id'];
+      if (selectedList != 'All Tasks' && listName != 'All Tasks') {
+        db.deleteFromAllTasks(id);
+      } else if (selectedList == 'All Tasks' && listName != selectedList) {
+        db.deleteFromList(listName, id);
+      }
       db.toDoList.removeAt(index);
       _sortToDoList();
       db.updateData();
@@ -410,18 +455,60 @@ class _HomePageState extends State<HomePage> {
                       letterSpacing: 3),
                 ),
               ),
-              const Divider(),
               Expanded(
                 child: ListView.builder(
                   padding: const EdgeInsets.all(8),
                   itemCount: db.allListNames.length,
                   itemBuilder: (context, index) {
-                    return ListNameTile(
-                      listName: db.allListNames[index],
-                      onDelete: () => _deleteList(index),
-                      onEdit: () => _inputOrEditListName(index: index),
-                      onSelected: () => setSelectedList(db.allListNames[index]),
-                    );
+                    return db.allListNames[index] != 'All Tasks'
+                        ? ListNameTile(
+                            listName: db.allListNames[index],
+                            onDelete: () => _deleteList(index),
+                            onEdit: () => _inputOrEditListName(index: index),
+                            onSelected: () =>
+                                setSelectedList(db.allListNames[index]))
+                        : Column(
+                            children: [
+                              GestureDetector(
+                                onTap: () {
+                                  setSelectedList('All Tasks');
+                                },
+                                child: const Card.filled(
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.all(
+                                      Radius.circular(30),
+                                    ),
+                                  ),
+                                  margin: EdgeInsets.all(8.0),
+                                  child: Padding(
+                                    padding: EdgeInsets.only(
+                                        left: 15.0,
+                                        right: 15.0,
+                                        top: 16,
+                                        bottom: 16),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Expanded(
+                                          child: Text(
+                                            'All Tasks',
+                                            maxLines: null,
+                                            softWrap: true,
+                                            style: TextStyle(
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.w500,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              const Divider(),
+                            ],
+                          );
                   },
                 ),
               ),
@@ -456,6 +543,8 @@ class _HomePageState extends State<HomePage> {
                 star: db.toDoList[index]['starred'],
                 dueDate: db.toDoList[index]['dueDate'],
                 maxLines: db.toDoList[index]['maxLines'],
+                listName: db.toDoList[index]['listName'],
+                id: db.toDoList[index]['id'],
                 onChanged: (value) => _toggleTask(index, value),
                 onStarred: (star) => _toggleStar(index, star),
                 onDelete: () => _deleteTask(index),

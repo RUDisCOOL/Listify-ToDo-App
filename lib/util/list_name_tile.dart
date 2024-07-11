@@ -57,19 +57,19 @@ class ListNameTile extends StatelessWidget {
                             children: [
                               ElevatedButton(
                                 onPressed: () {
-                                  onDelete();
                                   Navigator.of(context).pop();
                                 },
-                                child: const Text('Yes'),
+                                child: const Text('No'),
                               ),
                               const SizedBox(
                                 width: 15,
                               ),
                               ElevatedButton(
                                 onPressed: () {
+                                  onDelete();
                                   Navigator.of(context).pop();
                                 },
-                                child: const Text('No'),
+                                child: const Text('Yes'),
                               ),
                             ],
                           ),

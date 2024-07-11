@@ -115,7 +115,6 @@ class _HomePageState extends State<HomePage> {
   void _deleteList(index) {
     setState(() {
       db.deleteList(db.allListNames[index]);
-      db.allListNames.removeAt(index);
       setSelectedList('All Tasks');
     });
   }
@@ -543,7 +542,9 @@ class _HomePageState extends State<HomePage> {
                 star: db.toDoList[index]['starred'],
                 dueDate: db.toDoList[index]['dueDate'],
                 maxLines: db.toDoList[index]['maxLines'],
-                listName: db.toDoList[index]['listName'],
+                listName: selectedList == db.toDoList[index]['listName']
+                    ? null
+                    : db.toDoList[index]['listName'],
                 onChanged: (value) => _toggleTask(index, value),
                 onStarred: (star) => _toggleStar(index, star),
                 onDelete: () => _deleteTask(index),

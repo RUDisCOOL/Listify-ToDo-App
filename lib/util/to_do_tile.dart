@@ -27,7 +27,7 @@ class ToDoTile extends StatelessWidget {
   final bool star;
   final DateTime? dueDate;
   final dynamic maxLines;
-  final String listName;
+  final String? listName;
 
   final ValueChanged<bool?> onChanged;
   final ValueChanged<bool> onStarred;
@@ -41,7 +41,7 @@ class ToDoTile extends StatelessWidget {
     required this.star,
     required this.dueDate,
     required this.maxLines,
-    required this.listName,
+    this.listName,
     required this.onChanged,
     required this.onStarred,
     required this.onDelete,
@@ -135,19 +135,28 @@ class ToDoTile extends StatelessWidget {
                                   fontSize: 13,
                                 ),
                               ),
-                            Card.filled(
-                              color: const Color.fromARGB(255, 20, 90, 150),
-                              shape: const RoundedRectangleBorder(
-                                borderRadius: BorderRadius.all(
-                                  Radius.circular(20),
+                            if (listName != null)
+                              Card.filled(
+                                color: value
+                                    ? const Color.fromARGB(255, 9, 41, 69)
+                                    : const Color.fromARGB(255, 20, 90, 150),
+                                shape: const RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.all(
+                                    Radius.circular(20),
+                                  ),
+                                ),
+                                child: Padding(
+                                  padding: const EdgeInsets.only(
+                                      left: 8, right: 8, top: 4, bottom: 4),
+                                  child: Text(
+                                    listName!,
+                                    style: TextStyle(
+                                        color: value
+                                            ? completedTextColor
+                                            : commonTextColor),
+                                  ),
                                 ),
                               ),
-                              child: Padding(
-                                padding: const EdgeInsets.only(
-                                    left: 8, right: 8, top: 4, bottom: 4),
-                                child: Text(listName),
-                              ),
-                            ),
                           ],
                         )
                       ],

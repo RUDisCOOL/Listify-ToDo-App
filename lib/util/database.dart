@@ -169,15 +169,34 @@ class Database {
   }
 
   void editListName(index, newListName) {
-    toDoList =
-        List<Map<dynamic, dynamic>>.from(box.get(allListNames[index]) ?? []);
-    deleteList(allListNames[index]);
+    final oldListName = allListNames[index];
+    List<dynamic> tempList = box.get(oldListName);
+    List<dynamic> tempAllTaskList = box.get('All Tasks');
+    box.delete(oldListName);
+    for (int index = 0; index < tempList.length; index++) {
+      tempList[index]['listName'] = newListName;
+    }
+    for (int index = 0; index < tempAllTaskList.length; index++) {
+      if (tempAllTaskList[index]['listName'] == oldListName) {
+        tempAllTaskList[index]['listName'] = newListName;
+      }
+    }
     allListNames[index] = newListName;
     updateLists();
-    box.put(newListName, toDoList);
+    box.put(newListName, tempList);
+    box.put('All Tasks', tempAllTaskList);
   }
 
   void deleteList(String listName) {
+    List<dynamic> tempList = box.get('All Tasks');
+    for (int index = 0; index < tempList.length; index++) {
+      if (tempList[index]['listName'] == listName) {
+        deleteFromAllTasks(tempList[index]['id']);
+        index--;
+      }
+    }
+    allListNames.remove(listName);
+    updateLists();
     box.delete(listName);
   }
 }

@@ -533,33 +533,35 @@ class _HomePageState extends State<HomePage> {
         ),
       ),
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      body: Padding(
-        padding: const EdgeInsets.only(
-          top: 20,
-          left: 10,
-          right: 10,
-        ),
-        child: SlidableAutoCloseBehavior(
-          child: ListView.builder(
-            padding: const EdgeInsets.only(bottom: 80),
-            itemCount: db.toDoList.length,
-            itemBuilder: (context, index) {
-              return ToDoTile(
-                value: db.toDoList[index]['completed'],
-                task: db.toDoList[index]['task'],
-                star: db.toDoList[index]['starred'],
-                dueDate: db.toDoList[index]['dueDate'],
-                maxLines: db.toDoList[index]['maxLines'],
-                listName: selectedList == db.toDoList[index]['listName']
-                    ? null
-                    : db.toDoList[index]['listName'],
-                onChanged: (value) => _toggleTask(index, value),
-                onStarred: (star) => _toggleStar(index, star),
-                onDelete: () => _deleteTask(index),
-                onTaskTap: (maxLines) => _toggleMaxLines(index, maxLines),
-                onTaskLongPress: () => _showTaskInputEditField(index: index),
-              );
-            },
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.only(
+            top: 20,
+            left: 10,
+            right: 10,
+          ),
+          child: SlidableAutoCloseBehavior(
+            child: ListView.builder(
+              padding: const EdgeInsets.only(bottom: 80),
+              itemCount: db.toDoList.length,
+              itemBuilder: (context, index) {
+                return ToDoTile(
+                  value: db.toDoList[index]['completed'],
+                  task: db.toDoList[index]['task'],
+                  star: db.toDoList[index]['starred'],
+                  dueDate: db.toDoList[index]['dueDate'],
+                  maxLines: db.toDoList[index]['maxLines'],
+                  listName: selectedList == db.toDoList[index]['listName']
+                      ? null
+                      : db.toDoList[index]['listName'],
+                  onChanged: (value) => _toggleTask(index, value),
+                  onStarred: (star) => _toggleStar(index, star),
+                  onDelete: () => _deleteTask(index),
+                  onTaskTap: (maxLines) => _toggleMaxLines(index, maxLines),
+                  onTaskLongPress: () => _showTaskInputEditField(index: index),
+                );
+              },
+            ),
           ),
         ),
       ),
